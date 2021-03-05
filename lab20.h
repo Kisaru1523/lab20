@@ -12,7 +12,7 @@ class Equipment{
 	int atk;
 	int def;
 	public:
-		Equipment(int,int,int);
+		Equipment(int ,int ,int );
 		vector<int> getStat();			
 };
 
@@ -25,7 +25,7 @@ class Unit{
 		int def;
 		bool guard_on;
 		bool dodge_on; 
-		Equipment *equipment; 
+		Equipment *equipment; //constructor,private
 	public:			
 		Unit(string,string); 
 		void showStatus();
@@ -39,7 +39,41 @@ class Unit{
 		bool isDead();
 		void equip(Equipment *);  
 };
-
+Equipment::Equipment(int x,int y,int z){
+	x=hpmax;
+	y=atk;
+	z=def;
+}
+vector<int> Equipment::getStat(){
+	vector<int> duck;
+	duck.push_back(hpmax);
+	duck.push_back(atk);
+	duck.push_back(def);
+	return duck;
+}
+void Unit::equip(Equipment *neabsaradpak){
+	vector<int> salmon;
+	salmon=neabsaradpak->getStat();
+	if(hp>hpmax){
+		hp=hpmax;
+	}
+	if(equipment==NULL){
+		equipment=neabsaradpak;
+		hpmax=hpmax+salmon[0];
+		atk=atk+salmon[1];
+		def=def+salmon[2];
+	}else{
+		vector<int> salmon1;
+		salmon1=equipment->getStat();
+		hpmax=hpmax-salmon1[0];
+		atk=atk-salmon1[1];
+		def=def-salmon1[2];
+		equipment=neabsaradpak;
+		hpmax=hpmax+salmon[0];
+		atk=atk+salmon[1];
+		def=def+salmon[2];
+	}
+}
 Unit::Unit(string t,string n){ 
 	type = t;
 	name = n;
@@ -55,6 +89,7 @@ Unit::Unit(string t,string n){
 	hp = hpmax;	
 	guard_on = false;
 	equipment = NULL;
+	dodge_on = false;
 }
 
 void Unit::showStatus(){
@@ -73,24 +108,40 @@ void Unit::showStatus(){
 }
 
 void Unit::newTurn(){
-	guard_on = false; 
+	guard_on = false;
+	dodge_on = false;
 }
 
 int Unit::beAttacked(int oppatk){
 	int dmg;
+	int d=rand()%2;
 	if(oppatk > def){
 		dmg = oppatk-def;	
 		if(guard_on) dmg = dmg/3;
-	}	
+		
+		if(dodge_on){
+      if(d==0) dmg=0; 
+    else{
+        dmg=dmg*2;
+    }
+    }
+	}
+	
+
+    
+    
 	hp -= dmg;
 	if(hp <= 0){hp = 0;}
-	
 	return dmg;	
 }
 
 int Unit::attack(Unit &opp){
 	return opp.beAttacked(atk);
 }
+int Unit::ultimateAttack(Unit &oop){
+	return oop.beAttacked(atk*2);
+}
+
 
 int Unit::heal(){
 	int h = rand()%21 + 10;
@@ -102,6 +153,10 @@ int Unit::heal(){
 void Unit::guard(){
 	guard_on = true;
 }	
+void Unit::dodge(){
+	dodge_on = true;
+}	
+
 
 bool Unit::isDead(){
 	if(hp <= 0) return true;
